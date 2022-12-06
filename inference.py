@@ -1,14 +1,10 @@
-import os
-from PIL import Image, ImageOps
 import torch
+from datasets.grape import make_grape_transforms
 
-from detr import make_grape_transforms, rescale_bboxes
+from detr import rescale_bboxes
 
-def infer(img_sample, model, device, threshold, output_path):
+def infer(orig_image, model, device, threshold):
     model.eval()
-    filename = os.path.basename(img_sample)
-    orig_image = Image.open(img_sample)
-    orig_image = ImageOps.exif_transpose(orig_image)
     w, h = orig_image.size
     transform = make_grape_transforms("val")
     dummy_target = {
