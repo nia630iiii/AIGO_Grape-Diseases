@@ -151,7 +151,7 @@ def infer(img_sample, model, device, threshold, output_path):
     print("苦腐病葡萄數量:", single_bitter)
     print("晚腐病葡萄數量:", single_ripe)
 
-def plot_results(pil_img, output_path, prob, boxes, thresh):
+def plot_results(pil_img, prob, boxes, thresh):
     COLORS = ["#00ff00", "#8B0000", "#E60000", "#B8860B", "#FFD700"]
     CLASSES = ['normal', 'earlybitter', 'bitter', 'earlyripe', 'ripe']
     bitter = 0
