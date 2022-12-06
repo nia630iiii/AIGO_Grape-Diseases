@@ -1,4 +1,4 @@
-def crop_one_grape(img, bboxes_scaled):#裁剪葡萄圖片
+def crop_one_grape(img, bboxes_scaled, output_path):#裁剪葡萄圖片
     n = 0
     for i in bboxes_scaled:
         if(i[0] < 0):
