@@ -186,8 +186,7 @@ def plot_results(pil_img, output_path, prob, boxes, thresh):
         ax.text(xmin, ymin, text, fontsize=8,
                 bbox=dict(facecolor='white', alpha = thresh))
     plt.axis('off')
-    plt.savefig(output_path, bbox_inches='tight')
-    plt.close()
+    plt.show()
     return normal, bitter, ripe
 
 if __name__ == "__main__":
