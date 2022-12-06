@@ -118,7 +118,6 @@ def crop_one_grape(img, bboxes_scaled, output_path):#裁剪葡萄圖片
 def infer(img_sample, model, device, threshold, output_path):
     model.eval()
     filename = os.path.basename(img_sample)
-    print("processing...{}".format(filename))
     orig_image = Image.open(img_sample)
     orig_image = ImageOps.exif_transpose(orig_image)
     w, h = orig_image.size

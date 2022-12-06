@@ -1,18 +1,8 @@
-arser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
-args = parser.parse_args()
+import os
+from PIL import Image, ImageOps
+import torch
 
-output_dir = './result/'
-
-if output_dir:
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
-
-device = torch.device(args.device)
-
-model, _, postprocessors = build_model(args)
-if args.resume:
-    checkpoint = torch.load(args.resume, map_location='cpu')
-    model.load_state_dict(checkpoint['model'])
-model.to(device)
+from detr import make_grape_transforms, rescale_bboxes
 
 def infer(img_sample, model, device, threshold, output_path):
     model.eval()
