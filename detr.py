@@ -95,61 +95,7 @@ def rescale_bboxes(out_bbox, size):#rescale bbox
                           ], dtype=torch.float32)
     return b
 
-def crop_one_grape(img, bboxes_scaled, output_path):#裁剪葡萄圖片
-    n = 0
-    for i in bboxes_scaled:
-        if(i[0] < 0):
-            i[0] = 0
-        if(i[1] < 0):
-            i[1] = 0
-        if(i[2] < 0):
-            i[2] = 0
-        if(i[3] < 0):
-            i[3] = 0
-        im = img[int(i[1]):int(i[3]),int(i[0]):int(i[2])]
-        if not os.path.exists(output_path + "single"):
-            os.mkdir(output_path + "single")
-        save_path_file = os.path.join(output_path + "single" + "/" +str(n)+".jpg")
-        im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(save_path_file, im)
-        n += 1
-
 @torch.no_grad()
-def infer(img_sample, model, device, threshold, output_path):
-    model.eval()
-    filename = os.path.basename(img_sample)
-    orig_image = Image.open(img_sample)
-    orig_image = ImageOps.exif_transpose(orig_image)
-    w, h = orig_image.size
-    transform = make_grape_transforms("val")
-    dummy_target = {
-        "size": torch.as_tensor([int(h), int(w)]),
-        "orig_size": torch.as_tensor([int(h), int(w)])
-    }
-    image, targets = transform(orig_image, dummy_target)
-    image = image.unsqueeze(0)
-    
-    image = image.to(device)
-
-    outputs = model(image)
-    outputs["pred_logits"] = outputs["pred_logits"].cpu()
-    outputs["pred_boxes"] = outputs["pred_boxes"].cpu()
-
-    probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
-    keep = probas.max(-1).values > threshold
-    bboxes_scaled = rescale_bboxes(outputs['pred_boxes'][0, keep], orig_image.size)
-    probas = probas[keep].cpu().data.numpy()
-
-    if len(bboxes_scaled) == 0:
-        pass
-    img = np.array(orig_image)
-
-    img_save_path = os.path.join(output_path, filename)
-    crop_one_grape(img, bboxes_scaled, output_path)
-    single_normal, single_bitter, single_ripe = plot_results(img, img_save_path, probas, bboxes_scaled, threshold)
-    print("正常葡萄數量:", single_normal)
-    print("苦腐病葡萄數量:", single_bitter)
-    print("晚腐病葡萄數量:", single_ripe)
 
 def plot_results(pil_img, prob, boxes, thresh):
     COLORS = ["#00ff00", "#8B0000", "#E60000", "#B8860B", "#FFD700"]
@@ -188,24 +134,3 @@ def plot_results(pil_img, prob, boxes, thresh):
     plt.axis('off')
     plt.show()
     return normal, bitter, ripe
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
-    args = parser.parse_args()
-
-    output_dir = './result/'
-
-    if output_dir:
-        Path(output_dir).mkdir(parents=True, exist_ok=True)
-
-    device = torch.device(args.device)
-
-    model, _, postprocessors = build_model(args)
-    if args.resume:
-        checkpoint = torch.load(args.resume, map_location='cpu')
-        model.load_state_dict(checkpoint['model'])
-    model.to(device)
-
-    image_paths = "./disease_0007.jpg"
-
-    infer(image_paths, model, device, args.threshold, output_dir)
