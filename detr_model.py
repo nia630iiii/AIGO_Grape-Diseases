@@ -75,7 +75,7 @@ def get_args_parser():#參數輸入
     parser.add_argument('--dataset_file', default='grape')
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
-    parser.add_argument('--resume', default='./detr_checkpoint.pth', help='resume from checkpoint')
+    parser.add_argument('--resume', default='./checkpoint.pth', help='resume from checkpoint')
 
     parser.add_argument('--threshold', default=0.5, type=float)
 
