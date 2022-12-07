@@ -3,7 +3,7 @@ from datasets.grape import make_grape_transforms
 
 from detr import rescale_bboxes
 
-def infer(orig_image, model, device, threshold):
+def detr(orig_image, model, device, threshold):
     model.eval()
     w, h = orig_image.size
     transform = make_grape_transforms("val")
