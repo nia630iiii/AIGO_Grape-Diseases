@@ -1,7 +1,7 @@
 import torch
 from datasets.grape import make_grape_transforms
 
-from detr import rescale_bboxes
+from detr_model import rescale_bboxes
 
 def detr(orig_image, model, device, threshold):
     model.eval()

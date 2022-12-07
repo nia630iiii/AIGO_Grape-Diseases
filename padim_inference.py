@@ -18,7 +18,8 @@ from torch.utils.data import DataLoader
 from datasets import mvtec
 
 def padim(data_path,checkpoint_pth,model,device):
-
+    t_d = 448
+    d = 100
     random.seed(1024)
     torch.manual_seed(1024)
     use_cuda = torch.cuda.is_available()
