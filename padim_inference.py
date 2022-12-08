@@ -18,11 +18,14 @@ from torch.utils.data import DataLoader
 from datasets import mvtec
 
 def padim(data_path,checkpoint_pth,model,device):
+        # device setup
+    use_cuda = torch.cuda.is_available()
+    
     t_d = 448
     d = 100
+    
     random.seed(1024)
     torch.manual_seed(1024)
-    use_cuda = torch.cuda.is_available()
     if use_cuda:
         torch.cuda.manual_seed_all(1024)
 
@@ -30,6 +33,13 @@ def padim(data_path,checkpoint_pth,model,device):
 
     # set model's intermediate outputs
     outputs = []
+
+    def hook(module, input, output):
+        outputs.append(output)
+
+    model.layer1[-1].register_forward_hook(hook)
+    model.layer2[-1].register_forward_hook(hook)
+    model.layer3[-1].register_forward_hook(hook)
 
     for class_name in mvtec.CLASS_NAMES:
 
@@ -41,7 +51,7 @@ def padim(data_path,checkpoint_pth,model,device):
         test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
 
         # extract train set features
-        train_feature_filepath = checkpoint_pth
+        train_feature_filepath = checkpoint_path
         if not os.path.exists(train_feature_filepath):
             for (x, _, _) in train_dataloader:
                 # model prediction
