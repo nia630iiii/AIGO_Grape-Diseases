@@ -51,7 +51,7 @@ def padim(data_path,checkpoint_pth,model,device):
         test_outputs = OrderedDict([('layer1', []), ('layer2', []), ('layer3', [])])
 
         # extract train set features
-        train_feature_filepath = checkpoint_path
+        train_feature_filepath = checkpoint_pth
         if not os.path.exists(train_feature_filepath):
             for (x, _, _) in train_dataloader:
                 # model prediction
